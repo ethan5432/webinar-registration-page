@@ -76,11 +76,18 @@ export default function App() {
           <div className="mx-auto w-16 h-16 rounded-full bg-[#E8FBF4] flex items-center justify-center mb-6">
             <Check className="w-8 h-8 text-good" strokeWidth={2.5} />
           </div>
-          <h1 className="text-[32px] font-bold text-ink leading-[1.1] tracking-[-0.03em] mb-3">
+          <h1 className="text-[32px] font-bold text-ink leading-[1.1] tracking-[-0.03em] mb-4">
             You're registered.
           </h1>
-          <p className="text-[18px] text-body leading-[1.62]">
-            You'll get your webinar access link by email.
+          <div className="w-10 h-[3px] bg-red mx-auto mb-6" />
+          <p className="text-[18px] text-ink font-medium leading-[1.5] mb-5">
+            You're all set for the Careverse webinar.
+          </p>
+          <p className="text-[16px] text-body leading-[1.62] mb-4">
+            We'll send your webinar access link by email on the day of the event.
+          </p>
+          <p className="text-[15px] text-muted leading-[1.62]">
+            Please keep an eye on your inbox for the link and webinar details.
           </p>
         </div>
       </div>
