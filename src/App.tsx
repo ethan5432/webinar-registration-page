@@ -1,82 +1,37 @@
 import { useState } from 'react';
-import { Plus, Trash2, Check } from 'lucide-react';
+import { Check } from 'lucide-react';
 import logo from '/careverse_wordmark.svg';
 
 const FORM_ENDPOINT = 'FORM_ENDPOINT';
 
-const PLATFORMS = [
-  'Instagram',
-  'TikTok',
-  'YouTube',
-  'Facebook',
-  'X',
-  'LinkedIn',
-  'Blog / site',
-  'Other',
-] as const;
-
-type Platform = (typeof PLATFORMS)[number];
-
-interface ChannelRow {
-  id: number;
-  platform: string;
-  handle: string;
-}
-
-let nextId = 2;
-
-function makeChannel(platform = '', handle = ''): ChannelRow {
-  return { id: nextId++, platform, handle };
-}
-
-function channelsToText(rows: ChannelRow[]): string {
-  return rows
-    .filter((r) => r.platform.trim() && r.handle.trim())
-    .map((r) => `${r.platform} ${r.handle}`)
-    .join(' | ');
-}
+const REGISTRANT_TYPES = ['Creator', 'Agency', 'Network', 'Brand', 'Other'] as const;
+type RegistrantType = (typeof REGISTRANT_TYPES)[number];
 
 const inputClass =
   'w-full rounded-input border border-line bg-white px-4 text-[15px] text-ink h-12 focus:outline-none transition-duration-220';
 
+const labelClass =
+  'block text-[12px] font-extrabold text-ink uppercase tracking-[0.08em] mb-2';
+
+const optionalTag =
+  'text-muted font-normal normal-case tracking-normal';
+
 export default function App() {
+  const [registrantType, setRegistrantType] = useState<RegistrantType | ''>('');
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
-  const [channels, setChannels] = useState<ChannelRow[]>([makeChannel()]);
+  const [website, setWebsite] = useState('');
   const [why, setWhy] = useState('');
-  const [alreadyApplied, setAlreadyApplied] = useState<'yes' | 'no' | ''>('');
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState('');
 
-  function updateChannel(id: number, field: 'platform' | 'handle', value: string) {
-    setChannels((prev) => prev.map((r) => (r.id === id ? { ...r, [field]: value } : r)));
-  }
-
-  function addChannel() {
-    setChannels((prev) => [...prev, makeChannel()]);
-  }
-
-  function removeChannel(id: number) {
-    setChannels((prev) => (prev.length <= 1 ? prev : prev.filter((r) => r.id !== id)));
-  }
-
   function validate(): string | null {
-    if (!name.trim()) return 'Please enter your first name.';
+    if (!registrantType) return 'Please select how you\'re registering.';
+    if (!name.trim()) return 'Please enter your name.';
     if (!email.trim()) return 'Please enter your email.';
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim()))
       return 'Please enter a valid email address.';
-
-    for (const r of channels) {
-      const p = r.platform.trim();
-      const h = r.handle.trim();
-      if (p && !h) return 'Every platform needs a handle or URL.';
-      if (h && !p) return 'Every handle needs a platform selected.';
-    }
-    const first = channels[0];
-    if (!first.platform.trim() || !first.handle.trim())
-      return 'Please add at least one social channel.';
-
     return null;
   }
 
@@ -91,14 +46,11 @@ export default function App() {
     setSubmitting(true);
 
     const payload = {
+      registrant_type: registrantType,
       name: name.trim(),
       email: email.trim(),
-      channels: channels
-        .filter((r) => r.platform.trim() && r.handle.trim())
-        .map((r) => ({ platform: r.platform, handle: r.handle.trim() })),
-      channels_text: channelsToText(channels),
+      website: website.trim(),
       why: why.trim(),
-      already_applied: alreadyApplied || 'no',
       source: 'webinar',
     };
 
@@ -128,7 +80,7 @@ export default function App() {
             You're registered.
           </h1>
           <p className="text-[18px] text-body leading-[1.62]">
-            Check your email for the link.
+            You'll get your webinar access link by email.
           </p>
         </div>
       </div>
@@ -153,7 +105,7 @@ export default function App() {
       <section className="px-6 pt-16 pb-14 max-w-3xl mx-auto text-center">
         <div className="flex items-center justify-center gap-3 mb-6">
           <span className="w-6 h-[3px] bg-red" />
-          <span className="text-eyebrow text-muted uppercase">Creator Webinar</span>
+          <span className="text-eyebrow text-muted uppercase">Partner Webinar</span>
         </div>
         <h1 className="text-ink font-bold leading-[0.94] tracking-[-0.06em] text-[clamp(56px,6.7vw,88px)] mb-6">
           Reserve your seat
@@ -169,13 +121,33 @@ export default function App() {
           onSubmit={handleSubmit}
           className="max-w-xl mx-auto bg-white rounded-card shadow-[0_4px_24px_rgba(24,25,29,0.06)] border border-line p-6 md:p-9"
         >
+          {/* Registrant type */}
+          <div className="mb-5">
+            <p className={`${labelClass} mb-3`}>
+              I'm registering as <span className="text-red">*</span>
+            </p>
+            <div className="flex flex-wrap gap-3">
+              {REGISTRANT_TYPES.map((opt) => (
+                <button
+                  key={opt}
+                  type="button"
+                  onClick={() => setRegistrantType(opt)}
+                  className={`px-6 h-11 rounded-pill text-[13px] font-extrabold border transition-colors duration-220 ${
+                    registrantType === opt
+                      ? 'bg-ink border-ink text-white'
+                      : 'bg-white border-line text-body hover:border-ink'
+                  }`}
+                >
+                  {opt}
+                </button>
+              ))}
+            </div>
+          </div>
+
           {/* Name */}
           <div className="mb-5">
-            <label
-              htmlFor="name"
-              className="block text-[12px] font-extrabold text-ink uppercase tracking-[0.08em] mb-2"
-            >
-              First name <span className="text-red">*</span>
+            <label htmlFor="name" className={labelClass}>
+              Name <span className="text-red">*</span>
             </label>
             <input
               id="name"
@@ -183,16 +155,13 @@ export default function App() {
               value={name}
               onChange={(e) => setName(e.target.value)}
               className={inputClass}
-              placeholder="Alex"
+              placeholder="Alex Rivera"
             />
           </div>
 
           {/* Email */}
-          <div className="mb-8">
-            <label
-              htmlFor="email"
-              className="block text-[12px] font-extrabold text-ink uppercase tracking-[0.08em] mb-2"
-            >
+          <div className="mb-5">
+            <label htmlFor="email" className={labelClass}>
               Email <span className="text-red">*</span>
             </label>
             <input
@@ -205,75 +174,27 @@ export default function App() {
             />
           </div>
 
-          {/* Social channels */}
-          <fieldset className="mb-8">
-            <legend className="block text-[12px] font-extrabold text-ink uppercase tracking-[0.08em] mb-2">
-              Your social channels <span className="text-red">*</span>
-            </legend>
-            <p className="text-[13px] text-muted leading-[1.55] mb-4">
-              Add at least one. First row is required.
-            </p>
-
-            <div className="space-y-3">
-              {channels.map((row, idx) => (
-                <div
-                  key={row.id}
-                  className="flex flex-col sm:flex-row gap-2 sm:items-center"
-                >
-                  <select
-                    value={row.platform}
-                    onChange={(e) => updateChannel(row.id, 'platform', e.target.value)}
-                    className={`${inputClass} sm:w-44 sm:flex-none`}
-                  >
-                    <option value="">Platform</option>
-                    {PLATFORMS.map((p) => (
-                      <option key={p} value={p}>
-                        {p}
-                      </option>
-                    ))}
-                  </select>
-                  <input
-                    type="text"
-                    value={row.handle}
-                    onChange={(e) => updateChannel(row.id, 'handle', e.target.value)}
-                    className={`${inputClass} flex-1`}
-                    placeholder="@handle or URL"
-                  />
-                  {idx > 0 && (
-                    <button
-                      type="button"
-                      onClick={() => removeChannel(row.id)}
-                      aria-label="Remove channel"
-                      className="flex items-center justify-center gap-1 text-[13px] text-muted hover:text-red transition-colors duration-220 px-2 h-12 sm:h-12 sm:px-1"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                      <span className="sm:hidden">Remove</span>
-                    </button>
-                  )}
-                </div>
-              ))}
-            </div>
-
-            <button
-              type="button"
-              onClick={addChannel}
-              className="mt-4 inline-flex items-center gap-2 text-[13px] font-extrabold text-ink hover:text-red transition-colors duration-220"
-            >
-              <Plus className="w-4 h-4" />
-              Add another channel
-            </button>
-          </fieldset>
+          {/* Website / main channel */}
+          <div className="mb-8">
+            <label htmlFor="website" className={labelClass}>
+              Website or main channel{' '}
+              <span className={optionalTag}>(optional)</span>
+            </label>
+            <input
+              id="website"
+              type="text"
+              value={website}
+              onChange={(e) => setWebsite(e.target.value)}
+              className={inputClass}
+              placeholder="yoursite.com, @handle, or channel URL"
+            />
+          </div>
 
           {/* Why interested */}
-          <div className="mb-8">
-            <label
-              htmlFor="why"
-              className="block text-[12px] font-extrabold text-ink uppercase tracking-[0.08em] mb-2"
-            >
+          <div className="mb-9">
+            <label htmlFor="why" className={labelClass}>
               Why you're interested{' '}
-              <span className="text-muted font-normal normal-case tracking-normal">
-                (optional)
-              </span>
+              <span className={optionalTag}>(optional)</span>
             </label>
             <textarea
               id="why"
@@ -283,34 +204,6 @@ export default function App() {
               className="w-full rounded-input border border-line bg-white px-4 py-3 text-[15px] text-ink focus:outline-none transition-duration-220 resize-none"
               placeholder="Tell us what you hope to get out of the webinar."
             />
-          </div>
-
-          {/* Already applied */}
-          <div className="mb-9">
-            <p className="block text-[12px] font-extrabold text-ink uppercase tracking-[0.08em] mb-3">
-              Already applied to the Partner Program?{' '}
-              <span className="text-muted font-normal normal-case tracking-normal">
-                (optional)
-              </span>
-            </p>
-            <div className="flex gap-3">
-              {(['yes', 'no'] as const).map((opt) => (
-                <button
-                  key={opt}
-                  type="button"
-                  onClick={() =>
-                    setAlreadyApplied((prev) => (prev === opt ? '' : opt))
-                  }
-                  className={`px-7 h-11 rounded-pill text-[13px] font-extrabold border transition-colors duration-220 capitalize ${
-                    alreadyApplied === opt
-                      ? 'bg-ink border-ink text-white'
-                      : 'bg-white border-line text-body hover:border-ink'
-                  }`}
-                >
-                  {opt}
-                </button>
-              ))}
-            </div>
           </div>
 
           {/* Error */}
@@ -330,7 +223,7 @@ export default function App() {
           </button>
 
           <p className="mt-5 text-center text-legal text-muted">
-            Applications reviewed in 7 business days.
+            You'll get your webinar access link by email.
           </p>
         </form>
       </main>
