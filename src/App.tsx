@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Plus, Trash2, Check } from 'lucide-react';
-import logo from '/image.png';
+import logo from '/careverse_wordmark.svg';
 
 const FORM_ENDPOINT = 'FORM_ENDPOINT';
 
@@ -139,7 +139,7 @@ export default function App() {
     <div className="min-h-screen bg-cream font-sans text-body">
       {/* Header */}
       <header className="sticky top-0 z-50 bg-cream/88 backdrop-blur-md border-b border-line h-[72px] md:h-[82px] flex items-center px-6 md:px-10">
-        <img src={logo} alt="Careverse" className="h-8 md:h-9 w-auto" />
+        <img src={logo} alt="Careverse" className="h-7 md:h-8 w-auto" />
         <div className="flex-1" />
         <a
           href="#"
@@ -288,7 +288,7 @@ export default function App() {
           {/* Already applied */}
           <div className="mb-9">
             <p className="block text-[12px] font-extrabold text-ink uppercase tracking-[0.08em] mb-3">
-              Already applied to the Creator Network?{' '}
+              Already applied to the Partner Program?{' '}
               <span className="text-muted font-normal normal-case tracking-normal">
                 (optional)
               </span>
@@ -337,9 +337,9 @@ export default function App() {
 
       {/* Footer */}
       <footer className="bg-night px-6 py-12 text-center">
-        <img src={logo} alt="Careverse" className="h-8 w-auto mx-auto mb-4 brightness-0 invert" />
+        <img src={logo} alt="Careverse" className="h-7 w-auto mx-auto mb-4 brightness-0 invert" />
         <p className="text-[13px] text-night-text leading-[1.55]">
-          Careverse Creator Network
+          Careverse Partner Program
         </p>
       </footer>
     </div>
