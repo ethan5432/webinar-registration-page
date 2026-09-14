@@ -337,7 +337,9 @@ export default function App() {
 
       {/* Footer */}
       <footer className="bg-night px-6 py-12 text-center">
-        <img src={logo} alt="Careverse" className="h-7 w-auto mx-auto mb-4" />
+        <div className="inline-block bg-white rounded-lg px-3 py-1.5 mx-auto mb-4">
+          <img src={logo} alt="Careverse" className="h-6 w-auto" />
+        </div>
         <p className="text-[13px] text-night-text leading-[1.55]">
           Careverse Partner Program
         </p>
