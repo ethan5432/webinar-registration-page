@@ -1,8 +1,12 @@
 import { useState } from 'react';
 import { Check } from 'lucide-react';
+import { createClient } from '@supabase/supabase-js';
 import logo from '/careverse_wordmark.svg';
 
-const FORM_ENDPOINT = 'FORM_ENDPOINT';
+const supabase = createClient(
+  import.meta.env.VITE_SUPABASE_URL,
+  import.meta.env.VITE_SUPABASE_ANON_KEY,
+);
 
 const REGISTRANT_TYPES = ['Creator', 'Agency', 'Network', 'Brand', 'Other'] as const;
 type RegistrantType = (typeof REGISTRANT_TYPES)[number];
@@ -45,22 +49,18 @@ export default function App() {
     setError('');
     setSubmitting(true);
 
-    const payload = {
-      registrant_type: registrantType,
-      name: name.trim(),
-      email: email.trim(),
-      website: website.trim(),
-      why: why.trim(),
-      source: 'webinar',
-    };
-
     try {
-      const res = await fetch(FORM_ENDPOINT, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
-      });
-      if (!res.ok) throw new Error(`Request failed with status ${res.status}`);
+      const { error: insertError } = await supabase
+        .from('webinar_registrations')
+        .insert({
+          registrant_type: registrantType,
+          name: name.trim(),
+          email: email.trim(),
+          website: website.trim() || null,
+          why: why.trim() || null,
+          source: 'webinar',
+        });
+      if (insertError) throw new Error(insertError.message);
       setSubmitted(true);
     } catch {
       setError('Something went wrong submitting the form. Please try again.');
