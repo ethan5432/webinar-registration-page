@@ -92,13 +92,6 @@ export default function App() {
       {/* Header */}
       <header className="sticky top-0 z-50 bg-cream/88 backdrop-blur-md border-b border-line h-[72px] md:h-[82px] flex items-center px-6 md:px-10">
         <img src={logo} alt="Careverse" className="h-7 md:h-8 w-auto" />
-        <div className="flex-1" />
-        <a
-          href="#"
-          className="hidden md:inline-flex items-center justify-center bg-ink text-white font-extrabold text-[15px] rounded-pill h-11 px-6 hover:-translate-y-0.5 transition-transform duration-220"
-        >
-          Apply to join
-        </a>
       </header>
 
       {/* Hero */}
